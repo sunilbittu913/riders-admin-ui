@@ -102,128 +102,116 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the FleetCommand Admin Console application comprehensively. The application is a role-based admin portal for managing a ride-sharing/transportation service."
+user_problem_statement: "Test the complete FleetCommand authentication and navigation system comprehensively including landing page, login system, registration flows, forgot password, admin dashboard access, theme toggle, and UI/UX consistency."
 
 frontend:
-  - task: "Navigation & Layout"
+  - task: "Landing Page"
     implemented: true
-    working: true
+    working: "NA"
+    file: "/app/frontend/src/pages/LandingPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Initial testing - need to verify navigation, CTA buttons, responsive design, professional appearance, hero section, features, testimonials, and footer"
+
+  - task: "Login System"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/LoginPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Initial testing - need to test admin/rider login tabs, form validation, forgot password link, social login buttons, demo credentials display, and mock authentication flow"
+
+  - task: "Admin Registration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/RegisterAdminPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Initial testing - need to test 3-step form (personal info → company info → security), progress bar, feature highlights, validation, and navigation flow"
+
+  - task: "Rider Registration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/RegisterRiderPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Initial testing - need to test 2-step form, benefits display, validation, progress bar, and navigation flow"
+
+  - task: "Forgot Password Flow"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ForgotPasswordPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Initial testing - need to test email input → verification code → password reset flow with proper validation and navigation"
+
+  - task: "Admin Dashboard Access"
+    implemented: true
+    working: "NA"
     file: "/app/frontend/src/components/layout/AdminLayout.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
-        comment: "Initial testing - need to verify sidebar navigation between Dashboard, Drivers, Passengers, Fares & Rates, Disputes, and Analytics pages"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - All navigation links working perfectly. Successfully tested navigation to Dashboard, Drivers, Passengers, Fares, Disputes, and Analytics pages. Sidebar layout is functional and responsive."
+        comment: "Initial testing - need to test mock login with demo credentials leading to admin dashboard, verify all admin routes load correctly"
 
-  - task: "Dashboard Page"
+  - task: "Theme Toggle Functionality"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Dashboard.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "testing"
-        comment: "Initial testing - need to verify key metrics display, charts (revenue trends, ride status distribution), recent activity feed"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - Dashboard fully functional. All key metrics cards (Total Revenue $485,231, Active Drivers 1,247, Total Passengers 12,458, Open Disputes 23) displaying correctly. Found 25 chart containers including Revenue Trends area chart and Ride Status Distribution pie chart. Recent Activity section showing proper mock data with timestamps and status indicators."
-
-  - task: "Driver Management"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/DriversPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "testing"
-        comment: "Initial testing - need to test driver table, search functionality, status filters, action dropdowns"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - Driver Management page fully functional. Driver table displaying with proper columns (Driver, Contact, Status, Rating, Total Rides, Vehicle, Earnings, Actions). Mock data showing 5 drivers with different statuses (Online, Busy, Offline, Suspended). Search functionality and filter buttons present and accessible."
-
-  - task: "Passenger Management"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/PassengersPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "testing"
-        comment: "Initial testing - need to test passenger table, search, filters, and action menus"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - Passenger Management page fully functional. Passenger table displaying with proper columns (Passenger, Contact, Status, Rating, Total Rides, Total Spent, Last Ride, Actions). Mock data showing 5 passengers with different statuses (Active, Suspended). Search functionality and filter buttons present."
-
-  - task: "Fares & Rates"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/FaresPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "testing"
-        comment: "Initial testing - need to test fare rate editing, creating new rates, surge zone toggles"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - Fares & Rates page fully functional. Current fare rates table showing Base Rate, Peak Hours, Weekend Special, and Premium Service with proper pricing structure. Surge Pricing Zones section with toggles for Downtown (1.8x), Airport (2.2x), Business District (1.5x), and University Area (1.3x). Create New Rate form with all required fields present."
-
-  - task: "Disputes"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/DisputesPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "testing"
-        comment: "Initial testing - need to test dispute table, status filters, dispute detail dialog with messaging"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - Disputes page fully functional. Dispute table showing proper columns (Dispute ID, Issue, Passenger, Driver, Status, Priority, Amount, Submitted, Actions). Mock data showing 4 disputes with different statuses (Open, In Progress, Resolved) and priorities (High, Medium). Search functionality and status filters present."
-
-  - task: "Analytics"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/AnalyticsPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "NA"
-        agent: "testing"
-        comment: "Initial testing - need to verify all charts and data visualizations are rendering properly"
-      - working: true
-        agent: "testing"
-        comment: "✅ PASSED - Analytics page fully functional. All charts and visualizations rendering properly including Revenue & Rides Trend area chart, Hourly Activity Pattern bar chart, Performance by City Zone breakdown, and Driver Performance Tiers. Key metrics displaying correctly (Total Revenue $485,231, Total Rides 11,247, Active Drivers 1,247, Avg Rating 4.7, Avg Trip Time 18.5m)."
-
-  - task: "Responsive Design"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/layout/AdminLayout.jsx"
+    working: "NA"
+    file: "/app/frontend/src/components/theme/ThemeToggle.jsx"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
-        comment: "Initial testing - need to test on mobile and desktop viewports"
-      - working: true
+        comment: "Initial testing - need to test dark/light/system mode switching functionality in admin area and verify theme persistence"
+
+  - task: "Reports & Analytics Page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ReportsPage.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
         agent: "testing"
-        comment: "✅ PASSED - Responsive design working well. Mobile view (390x844) shows proper hamburger menu toggle, layout adapts correctly with stacked metric cards, and navigation is accessible. Desktop view (1920x1080) displays full sidebar and proper grid layouts. Minor: Mobile menu toggle had viewport positioning issue but overall responsive behavior is excellent."
+        comment: "Initial testing - need to verify new reports page with ride history, financial data, operational insights, and interactive elements"
+
+  - task: "Navigation Flow & UI Consistency"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Initial testing - need to test seamless navigation between all auth pages, design consistency, responsive design, interactive elements, loading states, and complete user journey from landing → registration/login → admin dashboard"
 
 metadata:
   created_by: "testing_agent"
