@@ -337,12 +337,12 @@ const RegisterAdminPage = () => {
                       <div className="space-y-2">
                         <Label>Company Size *</Label>
                         <Select value={formData.companySize} onValueChange={(value) => handleInputChange('companySize', value)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select size" />
+                          <SelectTrigger data-testid="company-size-select">
+                            <SelectValue placeholder="Select company size" />
                           </SelectTrigger>
                           <SelectContent>
                             {companySizes.map((size) => (
-                              <SelectItem key={size} value={size}>
+                              <SelectItem key={size} value={size} data-testid={`size-${size}`}>
                                 {size}
                               </SelectItem>
                             ))}
@@ -353,12 +353,12 @@ const RegisterAdminPage = () => {
                       <div className="space-y-2">
                         <Label>Industry *</Label>
                         <Select value={formData.industry} onValueChange={(value) => handleInputChange('industry', value)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select industry" />
+                          <SelectTrigger data-testid="industry-select">
+                            <SelectValue placeholder="Select your industry" />
                           </SelectTrigger>
                           <SelectContent>
                             {industries.map((industry) => (
-                              <SelectItem key={industry} value={industry}>
+                              <SelectItem key={industry} value={industry} data-testid={`industry-${industry}`}>
                                 {industry}
                               </SelectItem>
                             ))}
