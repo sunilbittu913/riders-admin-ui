@@ -4,7 +4,60 @@
 @tailwind utilities;
 
 :root {
-  /* Professional Dark Color System */
+  /* Light Mode Colors */
+  --background: 0 0% 100%;
+  --foreground: 222 84% 4%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 222 84% 4%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 84% 4%;
+  
+  --primary: 217 91% 60%;
+  --primary-foreground: 210 40% 98%;
+  --primary-glow: 217 100% 70%;
+  
+  --secondary: 210 40% 98%;
+  --secondary-foreground: 222 84% 4%;
+  
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 84% 4%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --success: 142 76% 36%;
+  --success-foreground: 210 40% 98%;
+  
+  --warning: 48 96% 53%;
+  --warning-foreground: 222 84% 4%;
+  
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 217 91% 60%;
+  
+  --radius: 0.5rem;
+  
+  /* Admin Dashboard Specific Colors - Light */
+  --sidebar: 0 0% 100%;
+  --sidebar-accent: 210 40% 96%;
+  --sidebar-border: 214 32% 91%;
+  
+  --metrics-bg: 210 40% 96%;
+  --metrics-border: 214 32% 91%;
+  
+  --chart-primary: 217 91% 60%;
+  --chart-secondary: 142 76% 36%;
+  --chart-accent: 48 96% 53%;
+  --chart-muted: 215 16% 47%;
+}
+
+.dark {
+  /* Dark Mode Colors */
   --background: 222 84% 4%;
   --foreground: 210 40% 98%;
   
@@ -40,9 +93,7 @@
   --input: 217 32% 17%;
   --ring: 217 91% 60%;
   
-  --radius: 0.5rem;
-  
-  /* Admin Dashboard Specific Colors */
+  /* Admin Dashboard Specific Colors - Dark */
   --sidebar: 222 84% 4%;
   --sidebar-accent: 217 32% 17%;
   --sidebar-border: 217 32% 17%;
