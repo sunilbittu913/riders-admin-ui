@@ -3,6 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import AdminLayout from '@/components/layout/AdminLayout';
+import LandingPage from '@/pages/LandingPage';
+import LoginPage from '@/pages/LoginPage';
+import RegisterRiderPage from '@/pages/RegisterRiderPage';
+import RegisterAdminPage from '@/pages/RegisterAdminPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import Dashboard from '@/pages/Dashboard';
 import DriversPage from '@/pages/DriversPage';
 import PassengersPage from '@/pages/PassengersPage';
