@@ -23,8 +23,16 @@ function App() {
       <Router>
         <div className="min-h-screen bg-background text-foreground transition-colors">
           <Routes>
-            <Route path="/" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/dashboard" replace />} />
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register/rider" element={<RegisterRiderPage />} />
+            <Route path="/register/admin" element={<RegisterAdminPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="drivers" element={<DriversPage />} />
               <Route path="passengers" element={<PassengersPage />} />
@@ -33,6 +41,15 @@ function App() {
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="reports" element={<ReportsPage />} />
             </Route>
+            
+            {/* Legacy Admin Routes (redirect to new paths) */}
+            <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/drivers" element={<Navigate to="/admin/drivers" replace />} />
+            <Route path="/passengers" element={<Navigate to="/admin/passengers" replace />} />
+            <Route path="/fares" element={<Navigate to="/admin/fares" replace />} />
+            <Route path="/disputes" element={<Navigate to="/admin/disputes" replace />} />
+            <Route path="/analytics" element={<Navigate to="/admin/analytics" replace />} />
+            <Route path="/reports" element={<Navigate to="/admin/reports" replace />} />
           </Routes>
           <Toaster />
         </div>
