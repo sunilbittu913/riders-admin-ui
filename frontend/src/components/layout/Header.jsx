@@ -45,6 +45,9 @@ const Header = ({ setSidebarOpen }) => {
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+          
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
