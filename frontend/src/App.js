@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import AdminLayout from '@/components/layout/AdminLayout';
 import Dashboard from '@/pages/Dashboard';
 import DriversPage from '@/pages/DriversPage';
@@ -8,6 +9,7 @@ import PassengersPage from '@/pages/PassengersPage';
 import FaresPage from '@/pages/FaresPage';
 import DisputesPage from '@/pages/DisputesPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
+import ReportsPage from '@/pages/ReportsPage';
 import './App.css';
 
 function App() {
