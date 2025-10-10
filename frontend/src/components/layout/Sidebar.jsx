@@ -10,7 +10,8 @@ import {
   BarChart3,
   Car,
   Shield,
-  X
+  X,
+  FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
