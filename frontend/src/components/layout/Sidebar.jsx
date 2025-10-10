@@ -16,13 +16,13 @@ import {
 import { Button } from '@/components/ui/button';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Drivers', href: '/drivers', icon: Car },
-  { name: 'Passengers', href: '/passengers', icon: Users },
-  { name: 'Fares & Rates', href: '/fares', icon: DollarSign },
-  { name: 'Disputes', href: '/disputes', icon: MessageSquare },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Reports', href: '/reports', icon: FileText },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Drivers', href: '/admin/drivers', icon: Car },
+  { name: 'Passengers', href: '/admin/passengers', icon: Users },
+  { name: 'Fares & Rates', href: '/admin/fares', icon: DollarSign },
+  { name: 'Disputes', href: '/admin/disputes', icon: MessageSquare },
+  { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { name: 'Reports', href: '/admin/reports', icon: FileText },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
