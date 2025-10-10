@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  /* Light Mode Colors */
+  /* Light Mode Colors - Improved Contrast */
   --background: 0 0% 100%;
   --foreground: 222 84% 4%;
   
@@ -14,46 +14,46 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222 84% 4%;
   
-  --primary: 217 91% 60%;
-  --primary-foreground: 210 40% 98%;
-  --primary-glow: 217 100% 70%;
+  --primary: 217 91% 50%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 217 100% 60%;
   
-  --secondary: 210 40% 98%;
+  --secondary: 210 40% 94%;
   --secondary-foreground: 222 84% 4%;
   
   --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted-foreground: 215 20% 35%;
   
-  --accent: 210 40% 96%;
+  --accent: 210 40% 94%;
   --accent-foreground: 222 84% 4%;
   
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 100%;
   
-  --success: 142 76% 36%;
-  --success-foreground: 210 40% 98%;
+  --success: 142 76% 30%;
+  --success-foreground: 0 0% 100%;
   
-  --warning: 48 96% 53%;
-  --warning-foreground: 222 84% 4%;
+  --warning: 48 96% 45%;
+  --warning-foreground: 0 0% 100%;
   
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 217 91% 60%;
+  --border: 214 32% 87%;
+  --input: 214 32% 87%;
+  --ring: 217 91% 50%;
   
   --radius: 0.5rem;
   
   /* Admin Dashboard Specific Colors - Light */
   --sidebar: 0 0% 100%;
-  --sidebar-accent: 210 40% 96%;
-  --sidebar-border: 214 32% 91%;
+  --sidebar-accent: 210 40% 94%;
+  --sidebar-border: 214 32% 87%;
   
   --metrics-bg: 210 40% 96%;
-  --metrics-border: 214 32% 91%;
+  --metrics-border: 214 32% 87%;
   
-  --chart-primary: 217 91% 60%;
-  --chart-secondary: 142 76% 36%;
-  --chart-accent: 48 96% 53%;
-  --chart-muted: 215 16% 47%;
+  --chart-primary: 217 91% 50%;
+  --chart-secondary: 142 76% 30%;
+  --chart-accent: 48 96% 45%;
+  --chart-muted: 215 20% 35%;
 }
 
 .dark {
