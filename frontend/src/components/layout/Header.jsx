@@ -17,6 +17,7 @@ import {
   User,
   AlertCircle
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 const Header = ({ setSidebarOpen }) => {
   return (
