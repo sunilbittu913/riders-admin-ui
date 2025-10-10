@@ -26,24 +26,18 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
 import { toast } from 'sonner';
 import {
   Search,
   Download,
-  Filter,
   Calendar,
   FileText,
   DollarSign,
@@ -54,7 +48,6 @@ import {
   Star,
   TrendingUp,
   TrendingDown,
-  Eye,
   CheckCircle,
   XCircle,
   AlertTriangle
