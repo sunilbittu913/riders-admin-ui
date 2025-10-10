@@ -177,26 +177,26 @@ const ReportsPage = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Page Header */}
-      <div className=\"flex items-center justify-between\">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className=\"text-3xl font-bold text-foreground\">Reports & Analytics</h1>
-          <p className=\"text-muted-foreground mt-1\">Comprehensive reporting and data insights</p>
+          <h1 className="text-3xl font-bold text-foreground">Reports & Analytics</h1>
+          <p className="text-muted-foreground mt-1">Comprehensive reporting and data insights</p>
         </div>
-        <div className=\"flex items-center space-x-2\">
+        <div className="flex items-center space-x-2">
           <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className=\"w-40\">
+            <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value=\"today\">Today</SelectItem>
-              <SelectItem value=\"week\">This Week</SelectItem>
-              <SelectItem value=\"month\">This Month</SelectItem>
-              <SelectItem value=\"quarter\">This Quarter</SelectItem>
-              <SelectItem value=\"year\">This Year</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={() => handleExportReport('All Reports')} className=\"bg-gradient-primary hover:opacity-90\">
-            <Download className=\"w-4 h-4 mr-2\" />
+          <Button onClick={() => handleExportReport('All Reports')} className="bg-gradient-primary hover:opacity-90">
+            <Download className="w-4 h-4 mr-2" />
             Export All
           </Button>
         </div>
