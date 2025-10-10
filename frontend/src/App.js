@@ -14,22 +14,25 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-background text-foreground">
-        <Routes>
-          <Route path="/" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="drivers" element={<DriversPage />} />
-            <Route path="passengers" element={<PassengersPage />} />
-            <Route path="fares" element={<FaresPage />} />
-            <Route path="disputes" element={<DisputesPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-          </Route>
-        </Routes>
-        <Toaster />
-      </div>
-    </Router>
+    <ThemeProvider defaultTheme="dark" storageKey="fleet-command-theme">
+      <Router>
+        <div className="min-h-screen bg-background text-foreground transition-colors">
+          <Routes>
+            <Route path="/" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="drivers" element={<DriversPage />} />
+              <Route path="passengers" element={<PassengersPage />} />
+              <Route path="fares" element={<FaresPage />} />
+              <Route path="disputes" element={<DisputesPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+            </Route>
+          </Routes>
+          <Toaster />
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
