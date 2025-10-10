@@ -22,6 +22,7 @@ const navigation = [
   { name: 'Fares & Rates', href: '/fares', icon: DollarSign },
   { name: 'Disputes', href: '/disputes', icon: MessageSquare },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Reports', href: '/reports', icon: FileText },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
