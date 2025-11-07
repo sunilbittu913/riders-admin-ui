@@ -17,6 +17,7 @@ import AnalyticsPage from '@/pages/AnalyticsPage';
 import ReportsPage from '@/pages/ReportsPage';
 import AdminUsersPage from '@/pages/AdminUsersPage';
 import ProfileSettingsPage from '@/pages/ProfileSettingsPage';
+import RolesPage from '@/pages/RolesPage';
 import './App.css';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<AdminUsersPage />} />
+              <Route path="roles" element={<RolesPage />} />
               <Route path="profile" element={<ProfileSettingsPage />} />
               <Route path="drivers" element={<DriversPage />} />
               <Route path="passengers" element={<PassengersPage />} />
