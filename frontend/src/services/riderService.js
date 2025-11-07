@@ -41,3 +41,13 @@ export async function deleteRider(id) {
   const resp = await api.delete(`/riders/${id}`);
   return resp?.data?.data ?? resp?.data;
 }
+
+export async function suspendRider(id) {
+  const resp = await api.delete(`/riders/inactive/${id}`);
+  return resp?.data?.data ?? resp?.data;
+}
+
+export async function activateRider(id) {
+  const resp = await api.delete(`/riders/active/${id}`);
+  return resp?.data?.data ?? resp?.data;
+}

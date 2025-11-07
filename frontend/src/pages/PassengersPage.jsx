@@ -19,7 +19,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { listRiders } from '@/services/riderService';
+import { listRiders, createRider, updateRider, suspendRider, activateRider } from '@/services/riderService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Plus,
@@ -53,6 +56,7 @@ const mapRiderRow = (r) => ({
 });
 
 const PassengersPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [rows, setRows] = useState([]);
@@ -60,6 +64,9 @@ const PassengersPage = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ fullName: '', email: '', phoneNumber: '' });
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -70,8 +77,18 @@ const PassengersPage = () => {
     return variants[status] || variants.active;
   };
 
-  const handlePassengerAction = (action, passengerId, passengerName) => {
-    toast.success(`${action} action completed for ${passengerName}`);
+  const handleViewProfile = (id) => navigate(`/admin/passengers/${id}`);
+  const onNew = () => { setEditing(null); setForm({ fullName: '', email: '', phoneNumber: '' }); setOpen(true); };
+  const onEdit = (p) => { setEditing(p); setForm({ fullName: p.name || '', email: p.email || '', phoneNumber: p.phone || '' }); setOpen(true); };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editing) await updateRider(editing.id, form);
+      else await createRider(form);
+      toast.success(editing ? 'Passenger updated' : 'Passenger created');
+      setOpen(false);
+      fetchData();
+    } catch { toast.error('Save failed'); }
   };
 
   const filteredPassengers = useMemo(() => rows.filter(passenger => {
@@ -81,8 +98,7 @@ const PassengersPage = () => {
     return matchesSearch && matchesStatus;
   }), [rows, searchTerm, statusFilter]);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       try {
         setLoading(true);
         const { items, total: t } = await listRiders({ search: searchTerm, page, size });
@@ -93,9 +109,8 @@ const PassengersPage = () => {
       } finally {
         setLoading(false);
       }
-    };
-    fetchData();
-  }, [searchTerm, page, size]);
+  };
+  useEffect(() => { fetchData(); }, [searchTerm, page, size]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -105,7 +120,7 @@ const PassengersPage = () => {
           <h1 className="text-3xl font-bold text-foreground">Passenger Management</h1>
           <p className="text-muted-foreground mt-1">Manage and monitor your passenger base</p>
         </div>
-        <Button className="bg-gradient-primary hover:opacity-90">
+        <Button className="bg-gradient-primary hover:opacity-90" onClick={onNew}>
           <Plus className="w-4 h-4 mr-2" />
           Add New Passenger
         </Button>
@@ -277,21 +292,21 @@ const PassengersPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handlePassengerAction('View Profile', passenger.id, passenger.name)}>
+                            <DropdownMenuItem onClick={() => handleViewProfile(passenger.id)}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePassengerAction('Edit Details', passenger.id, passenger.name)}>
+                            <DropdownMenuItem onClick={() => onEdit(passenger)}>
                               <Edit className="w-4 h-4 mr-2" />
                               Edit Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePassengerAction('View Ride History', passenger.id, passenger.name)}>
+                            <DropdownMenuItem onClick={() => handleViewProfile(passenger.id)}>
                               <Calendar className="w-4 h-4 mr-2" />
                               View Ride History
                             </DropdownMenuItem>
                             {passenger.status !== 'suspended' ? (
                               <DropdownMenuItem 
-                                onClick={() => handlePassengerAction('Suspend', passenger.id, passenger.name)}
+                                onClick={async () => { try { await suspendRider(passenger.id); toast.success('Suspended'); fetchData(); } catch { toast.error('Suspend failed'); } }}
                                 className="text-destructive"
                               >
                                 <Ban className="w-4 h-4 mr-2" />
@@ -299,7 +314,7 @@ const PassengersPage = () => {
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem 
-                                onClick={() => handlePassengerAction('Activate', passenger.id, passenger.name)}
+                                onClick={async () => { try { await activateRider(passenger.id); toast.success('Activated'); fetchData(); } catch { toast.error('Activate failed'); } }}
                                 className="text-success"
                               >
                                 <Users className="w-4 h-4 mr-2" />
@@ -324,6 +339,32 @@ const PassengersPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit Passenger' : 'New Passenger'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Full Name</Label>
+              <Input value={form.fullName} onChange={(e) => setForm(f => ({...f, fullName: e.target.value}))} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input type="email" value={form.email} onChange={(e) => setForm(f => ({...f, email: e.target.value}))} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+              <Input value={form.phoneNumber} onChange={(e) => setForm(f => ({...f, phoneNumber: e.target.value}))} />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" className="bg-gradient-primary">Save</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

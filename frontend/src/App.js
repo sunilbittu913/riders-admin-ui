@@ -11,6 +11,7 @@ import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import Dashboard from '@/pages/Dashboard';
 import DriversPage from '@/pages/DriversPage';
 import PassengersPage from '@/pages/PassengersPage';
+import RiderDetailsPage from '@/pages/RiderDetailsPage';
 import FaresPage from '@/pages/FaresPage';
 import DisputesPage from '@/pages/DisputesPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
@@ -42,6 +43,7 @@ function App() {
               <Route path="profile" element={<ProfileSettingsPage />} />
               <Route path="drivers" element={<DriversPage />} />
               <Route path="passengers" element={<PassengersPage />} />
+              <Route path="passengers/:id" element={<RiderDetailsPage />} />
               <Route path="fares" element={<FaresPage />} />
               <Route path="disputes" element={<DisputesPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
