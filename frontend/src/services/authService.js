@@ -11,6 +11,8 @@ const userStore = {
 
 // POST /api/admin/login -> AppUserVO
 export async function login({ userName, password }) {
+  // Ensure no stale token is sent with the login request
+  tokenStore.clear();
   const { data } = await api.post('/api/admin/login', { userName, password });
   if (data?.token) tokenStore.set(data.token);
   if (data) userStore.set(data);
