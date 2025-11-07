@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { sendEmail, findUserByEmail } from '@/services/adminService';
 import {
   Shield,
   Mail,
@@ -25,15 +26,23 @@ const ForgotPasswordPage = () => {
 
   const handleSendReset = async (e) => {
     e.preventDefault();
-    
     if (!email || !email.includes('@')) {
       toast.error('Please enter a valid email address');
       return;
     }
-
-    // Mock API call
-    toast.success('Reset link sent to your email!');
-    setStep('sent');
+    try {
+      const user = await findUserByEmail(email);
+      if (!user) {
+        toast.error('No user found with this email');
+        return;
+      }
+      await sendEmail(user.userName || email);
+      toast.success('Reset instructions sent to your email');
+      setStep('sent');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to send reset email';
+      toast.error(msg);
+    }
   };
 
   const handleVerifyCode = async (e) => {

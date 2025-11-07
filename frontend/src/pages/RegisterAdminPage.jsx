@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { createUser } from '@/services/adminService';
 import {
   Shield,
   Mail,
@@ -127,13 +128,23 @@ const RegisterAdminPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    
-    if (validateStep3()) {
-      toast.success('Admin registration successful! Setting up your dashboard...');
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2500);
+    if (!validateStep3()) return;
+    try {
+      const dto = {
+        userName: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        mobile: formData.phone,
+        email: formData.email,
+        roles: ['ROLE_ADMIN']
+      };
+      await createUser(dto);
+      toast.success('Admin registration successful');
+      navigate('/dashboard');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Registration failed';
+      toast.error(msg);
     }
   };
 
