@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { listDrivers } from '@/services/driverService';
 import {
   Search,
   Plus,
@@ -36,78 +37,28 @@ import {
   Mail
 } from 'lucide-react';
 
-// Mock driver data
-const driversData = [
-  {
-    id: 1,
-    name: 'John Smith',
-    email: 'john.smith@email.com',
-    phone: '+1 (555) 123-4567',
-    status: 'online',
-    rating: 4.8,
-    totalRides: 1247,
-    vehicle: 'Toyota Camry 2020',
-    licenseExpiry: '2025-06-15',
-    joinedDate: '2023-01-15',
-    earnings: 15420
-  },
-  {
-    id: 2,
-    name: 'Sarah Johnson',
-    email: 'sarah.j@email.com',
-    phone: '+1 (555) 234-5678',
-    status: 'busy',
-    rating: 4.9,
-    totalRides: 892,
-    vehicle: 'Honda Civic 2021',
-    licenseExpiry: '2024-12-20',
-    joinedDate: '2023-03-22',
-    earnings: 12350
-  },
-  {
-    id: 3,
-    name: 'Mike Chen',
-    email: 'mike.chen@email.com',
-    phone: '+1 (555) 345-6789',
-    status: 'offline',
-    rating: 4.7,
-    totalRides: 2156,
-    vehicle: 'Nissan Altima 2019',
-    licenseExpiry: '2025-03-10',
-    joinedDate: '2022-08-10',
-    earnings: 23150
-  },
-  {
-    id: 4,
-    name: 'Emma Wilson',
-    email: 'emma.w@email.com',
-    phone: '+1 (555) 456-7890',
-    status: 'suspended',
-    rating: 4.2,
-    totalRides: 456,
-    vehicle: 'Ford Focus 2020',
-    licenseExpiry: '2024-09-05',
-    joinedDate: '2023-06-18',
-    earnings: 5890
-  },
-  {
-    id: 5,
-    name: 'David Rodriguez',
-    email: 'david.r@email.com',
-    phone: '+1 (555) 567-8901',
-    status: 'online',
-    rating: 4.6,
-    totalRides: 1789,
-    vehicle: 'Hyundai Elantra 2021',
-    licenseExpiry: '2025-11-30',
-    joinedDate: '2022-11-05',
-    earnings: 18760
-  }
-];
+// API-driven data
+const mapDriverRow = (d) => ({
+  id: d.driverId ?? d.id,
+  name: d.fullName ?? d.name ?? 'N/A',
+  email: d.email ?? 'N/A',
+  phone: d.phoneNumber ?? 'N/A',
+  status: d.signupStatus?.toLowerCase?.() || 'offline',
+  rating: d.driverRating ?? 0,
+  totalRides: d.totalRides ?? 0,
+  vehicle: [d.vehicleMake, d.vehicleModel].filter(Boolean).join(' ') || '—',
+  licenseExpiry: d.drivingLicenseExpiry || '—',
+  joinedDate: d.createdDate?.slice?.(0, 10) || '—',
+  earnings: d.earnings ?? 0,
+});
 
 const DriversPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -123,12 +74,27 @@ const DriversPage = () => {
     toast.success(`${action} action completed for ${driverName}`);
   };
 
-  const filteredDrivers = driversData.filter(driver => {
+  const filteredDrivers = rows.filter(driver => {
     const matchesSearch = driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          driver.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || driver.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const { items } = await listDrivers({ search: searchTerm, page, size });
+        setRows(items.map(mapDriverRow));
+      } catch (e) {
+        toast.error('Failed to load drivers');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [searchTerm, page]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -230,7 +196,7 @@ const DriversPage = () => {
       {/* Drivers Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Drivers ({filteredDrivers.length})</CardTitle>
+          <CardTitle>Drivers ({filteredDrivers.length}) {loading && <span className="text-xs text-muted-foreground">Loading...</span>}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">

@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { login as apiLogin } from '@/services/authService';
 import {
   Shield,
   Mail,
@@ -32,20 +33,17 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
-    // Mock authentication
-    if (formData.email && formData.password) {
-      toast.success(`Welcome back! Logging in as ${loginType}...`);
-      
-      setTimeout(() => {
-        if (loginType === 'admin') {
-          navigate('/dashboard');
-        } else {
-          navigate('/rider-dashboard'); // You can create this later
-        }
-      }, 1500);
-    } else {
+    if (!formData.email || !formData.password) {
       toast.error('Please fill in all fields');
+      return;
+    }
+    try {
+      const user = await apiLogin({ userName: formData.email, password: formData.password });
+      toast.success(`Welcome back ${user?.firstName || ''}`);
+      navigate('/dashboard');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Login failed';
+      toast.error(msg);
     }
   };
 
@@ -126,13 +124,13 @@ const LoginPage = () => {
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">Username or Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="email"
-                    type="email"
-                    placeholder={loginType === 'admin' ? 'admin@fleetcommand.com' : 'rider@example.com'}
+                    type="text"
+                    placeholder={loginType === 'admin' ? 'admin username' : 'rider username'}
                     className="pl-10"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
