@@ -47,3 +47,13 @@ export async function deleteDriver(id) {
   const resp = await api.delete(`/drivers/${id}`);
   return resp?.data?.data ?? resp?.data;
 }
+
+export async function suspendDriver(id) {
+  const resp = await api.delete(`/drivers/inactive/${id}`);
+  return resp?.data?.data ?? resp?.data;
+}
+
+export async function activateDriver(id) {
+  const resp = await api.delete(`/drivers/active/${id}`);
+  return resp?.data?.data ?? resp?.data;
+}

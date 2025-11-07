@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { listDrivers } from '@/services/driverService';
+import { listDrivers, createDriver, updateDriver, suspendDriver, activateDriver } from '@/services/driverService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Plus,
@@ -53,12 +56,17 @@ const mapDriverRow = (d) => ({
 });
 
 const DriversPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [size, setSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ fullName: '', email: '', phoneNumber: '', vehicleMake: '', vehicleModel: '' });
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -70,31 +78,40 @@ const DriversPage = () => {
     return variants[status] || variants.offline;
   };
 
-  const handleDriverAction = (action, driverId, driverName) => {
-    toast.success(`${action} action completed for ${driverName}`);
+  const handleViewProfile = (id) => navigate(`/admin/drivers/${id}`);
+  const onNew = () => { setEditing(null); setForm({ fullName: '', email: '', phoneNumber: '', vehicleMake: '', vehicleModel: '' }); setOpen(true); };
+  const onEdit = (d) => { setEditing(d); setForm({ fullName: d.name || '', email: d.email || '', phoneNumber: d.phone || '', vehicleMake: d.vehicle.split(' ')[0] || '', vehicleModel: d.vehicle.split(' ').slice(1).join(' ') || '' }); setOpen(true); };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editing) await updateDriver(editing.id, form);
+      else await createDriver(form);
+      toast.success(editing ? 'Driver updated' : 'Driver created');
+      setOpen(false);
+      fetchData();
+    } catch { toast.error('Save failed'); }
   };
 
-  const filteredDrivers = rows.filter(driver => {
+  const filteredDrivers = useMemo(() => rows.filter(driver => {
     const matchesSearch = driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          driver.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || driver.status === statusFilter;
     return matchesSearch && matchesStatus;
-  });
+  }), [rows, searchTerm, statusFilter]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const { items } = await listDrivers({ search: searchTerm, page, size });
-        setRows(items.map(mapDriverRow));
-      } catch (e) {
-        toast.error('Failed to load drivers');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [searchTerm, page]);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const { items, total: t } = await listDrivers({ search: searchTerm, page, size });
+      setRows(items.map(mapDriverRow));
+      setTotal(t || items.length || 0);
+    } catch (e) {
+      toast.error('Failed to load drivers');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { fetchData(); }, [searchTerm, page, size]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -104,7 +121,7 @@ const DriversPage = () => {
           <h1 className="text-3xl font-bold text-foreground">Driver Management</h1>
           <p className="text-muted-foreground mt-1">Manage and monitor your driver network</p>
         </div>
-        <Button className="bg-gradient-primary hover:opacity-90">
+        <Button className="bg-gradient-primary hover:opacity-90" onClick={onNew}>
           <Plus className="w-4 h-4 mr-2" />
           Add New Driver
         </Button>
@@ -189,6 +206,12 @@ const DriversPage = () => {
                 <DropdownMenuItem onClick={() => setStatusFilter('suspended')}>Suspended</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Rows per page</span>
+              <select className="bg-background border rounded px-2 py-1" value={size} onChange={(e) => { setPage(0); setSize(Number(e.target.value)); }}>
+                {[10,20,50].map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -272,17 +295,17 @@ const DriversPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleDriverAction('View Profile', driver.id, driver.name)}>
+                            <DropdownMenuItem onClick={() => handleViewProfile(driver.id)}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDriverAction('Edit Details', driver.id, driver.name)}>
+                            <DropdownMenuItem onClick={() => onEdit(driver)}>
                               <Edit className="w-4 h-4 mr-2" />
                               Edit Details
                             </DropdownMenuItem>
                             {driver.status !== 'suspended' ? (
                               <DropdownMenuItem 
-                                onClick={() => handleDriverAction('Suspend', driver.id, driver.name)}
+                                onClick={async () => { try { await suspendDriver(driver.id); toast.success('Suspended'); fetchData(); } catch { toast.error('Suspend failed'); } }}
                                 className="text-destructive"
                               >
                                 <Ban className="w-4 h-4 mr-2" />
@@ -290,7 +313,7 @@ const DriversPage = () => {
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem 
-                                onClick={() => handleDriverAction('Activate', driver.id, driver.name)}
+                                onClick={async () => { try { await activateDriver(driver.id); toast.success('Activated'); fetchData(); } catch { toast.error('Activate failed'); } }}
                                 className="text-success"
                               >
                                 <CheckCircle className="w-4 h-4 mr-2" />
@@ -308,6 +331,41 @@ const DriversPage = () => {
           </div>
         </CardContent>
       </Card>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit Driver' : 'New Driver'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Full Name</Label>
+              <Input value={form.fullName} onChange={(e) => setForm(f => ({...f, fullName: e.target.value}))} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input type="email" value={form.email} onChange={(e) => setForm(f => ({...f, email: e.target.value}))} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+              <Input value={form.phoneNumber} onChange={(e) => setForm(f => ({...f, phoneNumber: e.target.value}))} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Vehicle Make</Label>
+                <Input value={form.vehicleMake} onChange={(e) => setForm(f => ({...f, vehicleMake: e.target.value}))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Vehicle Model</Label>
+                <Input value={form.vehicleModel} onChange={(e) => setForm(f => ({...f, vehicleModel: e.target.value}))} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" className="bg-gradient-primary">Save</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

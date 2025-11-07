@@ -10,6 +10,7 @@ import RegisterAdminPage from '@/pages/RegisterAdminPage';
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import Dashboard from '@/pages/Dashboard';
 import DriversPage from '@/pages/DriversPage';
+import DriverDetailsPage from '@/pages/DriverDetailsPage';
 import PassengersPage from '@/pages/PassengersPage';
 import RiderDetailsPage from '@/pages/RiderDetailsPage';
 import FaresPage from '@/pages/FaresPage';
@@ -42,6 +43,7 @@ function App() {
               <Route path="roles" element={<RolesPage />} />
               <Route path="profile" element={<ProfileSettingsPage />} />
               <Route path="drivers" element={<DriversPage />} />
+              <Route path="drivers/:id" element={<DriverDetailsPage />} />
               <Route path="passengers" element={<PassengersPage />} />
               <Route path="passengers/:id" element={<RiderDetailsPage />} />
               <Route path="fares" element={<FaresPage />} />
