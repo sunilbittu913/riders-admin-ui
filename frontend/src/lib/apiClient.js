@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+// In development, use relative URLs so CRA proxy can avoid CORS.
+// In production builds, use the configured absolute base URL.
+const API_BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? ''
+    : (process.env.REACT_APP_API_BASE_URL || '');
 
 // Simple token storage (localStorage key)
 const TOKEN_KEY = 'auth_token';

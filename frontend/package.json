@@ -60,6 +60,7 @@
     "build": "craco build",
     "test": "craco test"
   },
+  "proxy": "http://3.13.116.236:8082",
   "browserslist": {
     "production": [
       ">0.2%",
