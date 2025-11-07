@@ -46,15 +46,38 @@ export async function deleteUserWithTransfer(id, newOwnerId, body = '') {
 export async function listUsers({ search = '', page = 0, size = 10 } = {}) {
   const params = { page, size };
   if (search) params.search = search;
-  const resp = await api.get('/api/admin/list', { params });
-  return normalizePage(resp);
+  try {
+    const resp = await api.get('/api/admin/list', { params });
+    return normalizePage(resp);
+  } catch (e) {
+    // Fallback: if backend list is failing, support search via user-by-email
+    if (search) {
+      try {
+        const one = await findUserByEmail(search);
+        const items = one ? [one] : [];
+        return { items, total: items.length, page: 0, size: items.length };
+      } catch (_) { /* ignore */ }
+    }
+    return { items: [], total: 0, page: 0, size: 0 };
+  }
 }
 
 export async function listAllUsers({ search = '', page = 0, size = 10 } = {}) {
   const params = { page, size };
   if (search) params.search = search;
-  const resp = await api.get('/api/admin/list-all', { params });
-  return normalizePage(resp);
+  try {
+    const resp = await api.get('/api/admin/list-all', { params });
+    return normalizePage(resp);
+  } catch (e) {
+    if (search) {
+      try {
+        const one = await findUserByEmail(search);
+        const items = one ? [one] : [];
+        return { items, total: items.length, page: 0, size: items.length };
+      } catch (_) { /* ignore */ }
+    }
+    return { items: [], total: 0, page: 0, size: 0 };
+  }
 }
 
 // Validation / status
@@ -74,8 +97,17 @@ export async function findUserByEmail(email) {
 }
 
 export async function sendEmail(userName) {
-  const resp = await api.get('/api/admin/sendEmail', { params: { userName } });
-  return unwrap(resp);
+  // Try username param first; fallback to email param if looks like an email
+  try {
+    const resp = await api.get('/api/admin/sendEmail', { params: { userName } });
+    return unwrap(resp);
+  } catch (e) {
+    if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userName)) {
+      const resp2 = await api.get('/api/admin/sendEmail', { params: { email: userName } });
+      return unwrap(resp2);
+    }
+    throw e;
+  }
 }
 
 export async function employeeResetPassword(id) {
