@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { listDrivers, createDriver, updateDriver, suspendDriver, activateDriver } from '@/services/driverService';
+import { listDrivers, createDriver, updateDriver, deleteDriver } from '@/services/driverService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
@@ -303,23 +303,13 @@ const DriversPage = () => {
                               <Edit className="w-4 h-4 mr-2" />
                               Edit Details
                             </DropdownMenuItem>
-                            {driver.status !== 'suspended' ? (
-                              <DropdownMenuItem 
-                                onClick={async () => { try { await suspendDriver(driver.id); toast.success('Suspended'); fetchData(); } catch { toast.error('Suspend failed'); } }}
-                                className="text-destructive"
-                              >
-                                <Ban className="w-4 h-4 mr-2" />
-                                Suspend Driver
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem 
-                                onClick={async () => { try { await activateDriver(driver.id); toast.success('Activated'); fetchData(); } catch { toast.error('Activate failed'); } }}
-                                className="text-success"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Activate Driver
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem 
+                              onClick={async () => { if (!window.confirm('Delete this driver?')) return; try { await deleteDriver(driver.id); toast.success('Driver deleted'); fetchData(); } catch { toast.error('Delete failed'); } }}
+                              className="text-destructive"
+                            >
+                              <Ban className="w-4 h-4 mr-2" />
+                              Delete Driver
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

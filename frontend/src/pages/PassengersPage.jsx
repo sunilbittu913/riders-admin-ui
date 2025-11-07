@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { listRiders, createRider, updateRider, suspendRider, activateRider } from '@/services/riderService';
+import { listRiders, createRider, updateRider, deleteRider } from '@/services/riderService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
@@ -37,7 +37,8 @@ import {
   MapPin,
   Calendar,
   Star,
-  CreditCard
+  CreditCard,
+  Trash2
 } from 'lucide-react';
 
 // Map API rider to UI row
@@ -304,23 +305,13 @@ const PassengersPage = () => {
                               <Calendar className="w-4 h-4 mr-2" />
                               View Ride History
                             </DropdownMenuItem>
-                            {passenger.status !== 'suspended' ? (
-                              <DropdownMenuItem 
-                                onClick={async () => { try { await suspendRider(passenger.id); toast.success('Suspended'); fetchData(); } catch { toast.error('Suspend failed'); } }}
-                                className="text-destructive"
-                              >
-                                <Ban className="w-4 h-4 mr-2" />
-                                Suspend Account
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem 
-                                onClick={async () => { try { await activateRider(passenger.id); toast.success('Activated'); fetchData(); } catch { toast.error('Activate failed'); } }}
-                                className="text-success"
-                              >
-                                <Users className="w-4 h-4 mr-2" />
-                                Activate Account
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem 
+                              onClick={async () => { if (!window.confirm('Delete this passenger?')) return; try { await deleteRider(passenger.id); toast.success('Passenger deleted'); fetchData(); } catch { toast.error('Delete failed'); } }}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete Passenger
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

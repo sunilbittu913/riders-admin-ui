@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { getRider, activateRider, suspendRider } from '@/services/riderService';
-import { ArrowLeft, Mail, Phone, Users, Star, MapPin, Calendar, CheckCircle, Ban } from 'lucide-react';
+import { getRider, deleteRider } from '@/services/riderService';
+import { ArrowLeft, Mail, Phone, Users, Star, MapPin, Calendar, Trash2 } from 'lucide-react';
 
 const RiderDetailsPage = () => {
   const { id } = useParams();
   const [rider, setRider] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const load = async () => {
     try {
@@ -29,16 +30,15 @@ const RiderDetailsPage = () => {
   const status = (rider?.status || rider?.accountStatus || 'active')?.toString()?.toLowerCase?.() || 'active';
   const badgeClass = status === 'active'
     ? 'bg-success text-success-foreground'
-    : status === 'suspended'
-    ? 'bg-destructive text-destructive-foreground'
     : 'bg-muted text-muted-foreground';
 
-  const onSuspendToggle = async () => {
+  const onDelete = async () => {
+    if (!window.confirm('Delete this rider?')) return;
     try {
-      if (status !== 'suspended') { await suspendRider(id); toast.success('Rider suspended'); }
-      else { await activateRider(id); toast.success('Rider activated'); }
-      await load();
-    } catch { toast.error('Operation failed'); }
+      await deleteRider(id);
+      toast.success('Rider deleted');
+      navigate('/admin/passengers');
+    } catch { toast.error('Delete failed'); }
   };
 
   return (
@@ -51,9 +51,8 @@ const RiderDetailsPage = () => {
         </div>
         <div className="flex gap-2">
           <Badge className={badgeClass}>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
-          <Button variant={status !== 'suspended' ? 'destructive' : 'default'} onClick={onSuspendToggle}>
-            {status !== 'suspended' ? <Ban className="w-4 h-4 mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-            {status !== 'suspended' ? 'Suspend' : 'Activate'}
+          <Button variant="destructive" onClick={onDelete}>
+            <Trash2 className="w-4 h-4 mr-2" /> Delete
           </Button>
         </div>
       </div>
