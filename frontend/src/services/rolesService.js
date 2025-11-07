@@ -13,38 +13,38 @@ function normalizePage(resp) {
 
 export async function listRoles({ search = '', page = 0, size = 10 } = {}) {
   const params = { page, size };
-  const url = search ? '/api/admin/roles/filtered-list' : '/api/admin/roles/list';
+  const url = search ? '/roles/filtered-list' : '/roles/list';
   if (search) params.search = search;
   const { data } = await api.get(url, { params });
   return normalizePage(data);
 }
 
 export async function listRolesByCompany(companyId, { page = 0, size = 10 } = {}) {
-  const { data } = await api.get(`/api/admin/roles/list/${companyId}`, { params: { page, size } });
+  const { data } = await api.get(`/roles/list/${companyId}`, { params: { page, size } });
   return normalizePage(data);
 }
 
 export async function dropdownList() {
-  const { data } = await api.get('/api/admin/roles/dropdownList');
+  const { data } = await api.get('/roles/dropdownList');
   return data?.data ?? data;
 }
 
 export async function getRole(id) {
-  const { data } = await api.get(`/api/admin/roles/${id}`);
+  const { data } = await api.get(`/roles/${id}`);
   return data?.data ?? data;
 }
 
 export async function createRole(payload) {
-  const { data } = await api.post('/api/admin/roles', payload);
+  const { data } = await api.post('/roles', payload);
   return data?.data ?? data;
 }
 
 export async function updateRole(id, payload) {
-  const { data } = await api.put(`/api/admin/roles/${id}`, payload);
+  const { data } = await api.put(`/roles/${id}`, payload);
   return data?.data ?? data;
 }
 
 export async function deleteRole(id) {
-  const { data } = await api.delete(`/api/admin/roles/${id}`);
+  const { data } = await api.delete(`/roles/${id}`);
   return data?.data ?? data;
 }
