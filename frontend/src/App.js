@@ -15,6 +15,8 @@ import FaresPage from '@/pages/FaresPage';
 import DisputesPage from '@/pages/DisputesPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
 import ReportsPage from '@/pages/ReportsPage';
+import AdminUsersPage from '@/pages/AdminUsersPage';
+import ProfileSettingsPage from '@/pages/ProfileSettingsPage';
 import './App.css';
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="profile" element={<ProfileSettingsPage />} />
               <Route path="drivers" element={<DriversPage />} />
               <Route path="passengers" element={<PassengersPage />} />
               <Route path="fares" element={<FaresPage />} />
