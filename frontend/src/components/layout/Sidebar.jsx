@@ -11,18 +11,22 @@ import {
   Car,
   Shield,
   X,
-  FileText
+  FileText,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Roles', href: '/admin/roles', icon: Shield },
   { name: 'Drivers', href: '/admin/drivers', icon: Car },
   { name: 'Passengers', href: '/admin/passengers', icon: Users },
   { name: 'Fares & Rates', href: '/admin/fares', icon: DollarSign },
   { name: 'Disputes', href: '/admin/disputes', icon: MessageSquare },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Reports', href: '/admin/reports', icon: FileText },
+  { name: 'Profile', href: '/admin/profile', icon: Settings },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {

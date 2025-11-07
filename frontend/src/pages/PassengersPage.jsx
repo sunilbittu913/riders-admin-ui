@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { listRiders, createRider, updateRider, deleteRider } from '@/services/riderService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Plus,
@@ -33,86 +37,37 @@ import {
   MapPin,
   Calendar,
   Star,
-  CreditCard
+  CreditCard,
+  Trash2
 } from 'lucide-react';
 
-// Mock passenger data
-const passengersData = [
-  {
-    id: 1,
-    name: 'Alice Johnson',
-    email: 'alice.johnson@email.com',
-    phone: '+1 (555) 123-4567',
-    status: 'active',
-    rating: 4.6,
-    totalRides: 87,
-    totalSpent: 2450,
-    joinedDate: '2023-01-15',
-    lastRide: '2024-01-10',
-    paymentMethod: 'Credit Card',
-    favoriteLocation: 'Downtown'
-  },
-  {
-    id: 2,
-    name: 'Robert Smith',
-    email: 'robert.s@email.com',
-    phone: '+1 (555) 234-5678',
-    status: 'active',
-    rating: 4.8,
-    totalRides: 156,
-    totalSpent: 4890,
-    joinedDate: '2022-11-20',
-    lastRide: '2024-01-12',
-    paymentMethod: 'PayPal',
-    favoriteLocation: 'Airport'
-  },
-  {
-    id: 3,
-    name: 'Maria Garcia',
-    email: 'maria.g@email.com',
-    phone: '+1 (555) 345-6789',
-    status: 'active',
-    rating: 4.9,
-    totalRides: 243,
-    totalSpent: 7650,
-    joinedDate: '2022-08-05',
-    lastRide: '2024-01-11',
-    paymentMethod: 'Credit Card',
-    favoriteLocation: 'Shopping Mall'
-  },
-  {
-    id: 4,
-    name: 'James Wilson',
-    email: 'james.w@email.com',
-    phone: '+1 (555) 456-7890',
-    status: 'suspended',
-    rating: 3.2,
-    totalRides: 34,
-    totalSpent: 890,
-    joinedDate: '2023-09-12',
-    lastRide: '2023-12-15',
-    paymentMethod: 'Credit Card',
-    favoriteLocation: 'University'
-  },
-  {
-    id: 5,
-    name: 'Lisa Chen',
-    email: 'lisa.chen@email.com',
-    phone: '+1 (555) 567-8901',
-    status: 'active',
-    rating: 4.7,
-    totalRides: 198,
-    totalSpent: 5420,
-    joinedDate: '2023-02-28',
-    lastRide: '2024-01-09',
-    paymentMethod: 'Digital Wallet',
-    favoriteLocation: 'Business District'
-  }
-];
+// Map API rider to UI row
+const mapRiderRow = (r) => ({
+  id: r.riderId ?? r.id,
+  name: r.fullName ?? r.name ?? r.userName ?? 'N/A',
+  email: r.email ?? 'N/A',
+  phone: r.phoneNumber ?? r.mobile ?? 'N/A',
+  status: (r.status || r.accountStatus || 'active').toString().toLowerCase(),
+  rating: r.rating ?? r.riderRating ?? 0,
+  totalRides: r.totalRides ?? 0,
+  totalSpent: r.totalSpent ?? 0,
+  joinedDate: r.createdDate?.slice?.(0,10) || '—',
+  lastRide: r.lastRideDate?.slice?.(0,10) || '—',
+  favoriteLocation: r.favoriteLocation || '—',
+});
 
 const PassengersPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ fullName: '', email: '', phoneNumber: '' });
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -123,16 +78,40 @@ const PassengersPage = () => {
     return variants[status] || variants.active;
   };
 
-  const handlePassengerAction = (action, passengerId, passengerName) => {
-    toast.success(`${action} action completed for ${passengerName}`);
+  const handleViewProfile = (id) => navigate(`/admin/passengers/${id}`);
+  const onNew = () => { setEditing(null); setForm({ fullName: '', email: '', phoneNumber: '' }); setOpen(true); };
+  const onEdit = (p) => { setEditing(p); setForm({ fullName: p.name || '', email: p.email || '', phoneNumber: p.phone || '' }); setOpen(true); };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editing) await updateRider(editing.id, form);
+      else await createRider(form);
+      toast.success(editing ? 'Passenger updated' : 'Passenger created');
+      setOpen(false);
+      fetchData();
+    } catch { toast.error('Save failed'); }
   };
 
-  const filteredPassengers = passengersData.filter(passenger => {
+  const filteredPassengers = useMemo(() => rows.filter(passenger => {
     const matchesSearch = passenger.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          passenger.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || passenger.status === statusFilter;
     return matchesSearch && matchesStatus;
-  });
+  }), [rows, searchTerm, statusFilter]);
+
+  const fetchData = async () => {
+      try {
+        setLoading(true);
+        const { items, total: t } = await listRiders({ search: searchTerm, page, size });
+        setRows(items.map(mapRiderRow));
+        setTotal(t || items.length || 0);
+      } catch (e) {
+        toast.error('Failed to load passengers');
+      } finally {
+        setLoading(false);
+      }
+  };
+  useEffect(() => { fetchData(); }, [searchTerm, page, size]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -142,7 +121,7 @@ const PassengersPage = () => {
           <h1 className="text-3xl font-bold text-foreground">Passenger Management</h1>
           <p className="text-muted-foreground mt-1">Manage and monitor your passenger base</p>
         </div>
-        <Button className="bg-gradient-primary hover:opacity-90">
+        <Button className="bg-gradient-primary hover:opacity-90" onClick={onNew}>
           <Plus className="w-4 h-4 mr-2" />
           Add New Passenger
         </Button>
@@ -212,6 +191,12 @@ const PassengersPage = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Rows per page</span>
+              <select className="bg-background border rounded px-2 py-1" value={size} onChange={(e) => { setPage(0); setSize(Number(e.target.value)); }}>
+                {[10,20,50].map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-40">
@@ -233,7 +218,7 @@ const PassengersPage = () => {
       {/* Passengers Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Passengers ({filteredPassengers.length})</CardTitle>
+          <CardTitle>Passengers ({filteredPassengers.length}) {loading && <span className="text-xs text-muted-foreground">Loading...</span>}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -308,35 +293,25 @@ const PassengersPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handlePassengerAction('View Profile', passenger.id, passenger.name)}>
+                            <DropdownMenuItem onClick={() => handleViewProfile(passenger.id)}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePassengerAction('Edit Details', passenger.id, passenger.name)}>
+                            <DropdownMenuItem onClick={() => onEdit(passenger)}>
                               <Edit className="w-4 h-4 mr-2" />
                               Edit Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handlePassengerAction('View Ride History', passenger.id, passenger.name)}>
+                            <DropdownMenuItem onClick={() => handleViewProfile(passenger.id)}>
                               <Calendar className="w-4 h-4 mr-2" />
                               View Ride History
                             </DropdownMenuItem>
-                            {passenger.status !== 'suspended' ? (
-                              <DropdownMenuItem 
-                                onClick={() => handlePassengerAction('Suspend', passenger.id, passenger.name)}
-                                className="text-destructive"
-                              >
-                                <Ban className="w-4 h-4 mr-2" />
-                                Suspend Account
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem 
-                                onClick={() => handlePassengerAction('Activate', passenger.id, passenger.name)}
-                                className="text-success"
-                              >
-                                <Users className="w-4 h-4 mr-2" />
-                                Activate Account
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem 
+                              onClick={async () => { if (!window.confirm('Delete this passenger?')) return; try { await deleteRider(passenger.id); toast.success('Passenger deleted'); fetchData(); } catch { toast.error('Delete failed'); } }}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete Passenger
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -346,8 +321,41 @@ const PassengersPage = () => {
               </TableBody>
             </Table>
           </div>
+          <div className="flex items-center justify-between mt-4 text-sm">
+            <div className="text-muted-foreground">Page {page + 1} • Total {total}</div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => Math.max(0, p-1))}>Prev</Button>
+              <Button variant="outline" size="sm" onClick={() => setPage(p => p+1)}>Next</Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit Passenger' : 'New Passenger'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Full Name</Label>
+              <Input value={form.fullName} onChange={(e) => setForm(f => ({...f, fullName: e.target.value}))} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input type="email" value={form.email} onChange={(e) => setForm(f => ({...f, email: e.target.value}))} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+              <Input value={form.phoneNumber} onChange={(e) => setForm(f => ({...f, phoneNumber: e.target.value}))} />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" className="bg-gradient-primary">Save</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
