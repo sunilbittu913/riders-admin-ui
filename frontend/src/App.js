@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import AdminLayout from '@/components/layout/AdminLayout';
+import ShowcaseLayout from '@/components/layout/ShowcaseLayout';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import RegisterRiderPage from '@/pages/RegisterRiderPage';
@@ -20,6 +21,9 @@ import ReportsPage from '@/pages/ReportsPage';
 import AdminUsersPage from '@/pages/AdminUsersPage';
 import ProfileSettingsPage from '@/pages/ProfileSettingsPage';
 import RolesPage from '@/pages/RolesPage';
+import ShowcaseHomePage from '@/pages/showcase/ShowcaseHomePage';
+import ComponentsGalleryPage from '@/pages/showcase/ComponentsGalleryPage';
+import ProjectsShowcasePage from '@/pages/showcase/ProjectsShowcasePage';
 import './App.css';
 
 function App() {
@@ -28,8 +32,18 @@ function App() {
       <Router>
         <div className="min-h-screen bg-background text-foreground transition-colors">
           <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
+            {/* Root redirect to showcase */}
+            <Route path="/" element={<Navigate to="/showcase" replace />} />
+
+            {/* Showcase Routes (21st.dev-style) */}
+            <Route path="/showcase" element={<ShowcaseLayout />}>
+              <Route index element={<ShowcaseHomePage />} />
+              <Route path="components" element={<ComponentsGalleryPage />} />
+              <Route path="projects" element={<ProjectsShowcasePage />} />
+            </Route>
+
+            {/* Legacy Landing & Auth */}
+            <Route path="/landing" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register/rider" element={<RegisterRiderPage />} />
             <Route path="/register/admin" element={<RegisterAdminPage />} />
